@@ -1,0 +1,664 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Expense Tracker</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f7fb;
+    color: #263248;
+}
+
+.container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 230px;
+    background: #172554;
+    color: white;
+    padding: 28px 18px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.logo span {
+    color: #60a5fa;
+}
+
+.menu-title {
+    font-size: 11px;
+    color: #a5b4d2;
+    margin: 20px 10px 12px;
+    text-transform: uppercase;
+}
+
+.menu a {
+    display: block;
+    padding: 13px 12px;
+    color: #dbeafe;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.menu a:hover,
+.menu a.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* Main content */
+.main {
+    flex: 1;
+    padding: 30px;
+    min-width: 0;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+}
+
+.topbar h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.topbar p {
+    color: #718096;
+    font-size: 14px;
+}
+
+.profile {
+    background: white;
+    padding: 12px 17px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+/* Summary cards */
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background: white;
+    padding: 22px;
+    border-radius: 13px;
+    border: 1px solid #e8edf5;
+    box-shadow: 0 3px 12px #00000005;
+}
+
+.card-label {
+    color: #718096;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.card h2 {
+    font-size: 27px;
+    margin-bottom: 10px;
+    overflow-wrap: anywhere;
+}
+
+.card small {
+    color: #718096;
+}
+
+.balance { border-top: 4px solid #3b82f6; }
+.income { border-top: 4px solid #22c55e; }
+.expense { border-top: 4px solid #ef4444; }
+
+/* Layout panels */
+.content-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 22px;
+    align-items: start;
+}
+
+.panel {
+    background: white;
+    padding: 24px;
+    border-radius: 13px;
+    border: 1px solid #e8edf5;
+    box-shadow: 0 3px 12px #00000005;
+    margin-bottom: 22px;
+}
+
+.panel h2 {
+    font-size: 19px;
+    margin-bottom: 22px;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #475569;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dbe2ed;
+    border-radius: 7px;
+    background: white;
+    font-size: 14px;
+    outline: none;
+}
+
+input:focus, select:focus {
+    border-color: #3b82f6;
+}
+
+.btn {
+    width: 100%;
+    padding: 13px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+}
+
+.message {
+    font-size: 13px;
+    color: #b91c1c;
+    margin-top: 12px;
+}
+
+/* Transaction list */
+.transaction {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 0;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.transaction:last-child {
+    border-bottom: none;
+}
+
+.trans-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.trans-icon {
+    width: 42px;
+    height: 42px;
+    background: #eff6ff;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.trans-name {
+    font-weight: bold;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.trans-category {
+    color: #718096;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.amount {
+    font-weight: bold;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.positive { color: #16a34a; }
+.negative { color: #dc2626; }
+
+/* Budget section */
+.budget-item {
+    margin-bottom: 23px;
+}
+
+.budget-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.progress {
+    height: 9px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress div {
+    height: 100%;
+    border-radius: 20px;
+}
+
+.food-bar { width: 70%; background: #3b82f6; }
+.travel-bar { width: 45%; background: #f59e0b; }
+.shopping-bar { width: 85%; background: #a78bfa; }
+
+.tip {
+    padding: 16px;
+    background: #eff6ff;
+    border-radius: 9px;
+    color: #1e40af;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-top: 20px;
+}
+
+.empty {
+    color: #94a3b8;
+    font-size: 14px;
+    padding: 15px 0;
+}
+
+/* Responsive design */
+@media (max-width: 1000px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .container {
+        display: block;
+    }
+
+    .sidebar {
+        width: 100%;
+        padding: 20px;
+    }
+
+    .logo {
+        margin-bottom: 20px;
+    }
+
+    .menu {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .menu a {
+        margin: 0;
+        padding: 10px;
+    }
+
+    .main {
+        padding: 18px;
+    }
+
+    .topbar h1 {
+        font-size: 23px;
+    }
+
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .panel {
+        padding: 18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="logo">Smart<span>Spend</span></div>
+
+        <div class="menu-title">Menu</div>
+
+        <nav class="menu">
+            <a href="#dashboard" class="active">Dashboard</a>
+            <a href="#transactions">Transactions</a>
+            <a href="#add">Add Transaction</a>
+            <a href="#budgets">Budgets</a>
+        </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main" id="dashboard">
+
+        <header class="topbar">
+            <div>
+                <h1>Expense Dashboard</h1>
+                <p>Track your income, spending and savings.</p>
+            </div>
+
+            <div class="profile">👤 My Finance</div>
+        </header>
+
+        <!-- Summary -->
+        <section class="summary">
+
+            <div class="card balance">
+                <p class="card-label">Current Balance</p>
+                <h2 id="balance">₹15,000</h2>
+                <small>Income minus expenses</small>
+            </div>
+
+            <div class="card income">
+                <p class="card-label">Total Income</p>
+                <h2 id="income">₹20,000</h2>
+                <small>Money received</small>
+            </div>
+
+            <div class="card expense">
+                <p class="card-label">Total Expenses</p>
+                <h2 id="expenses">₹5,000</h2>
+                <small>Money spent</small>
+            </div>
+
+        </section>
+
+        <div class="content-grid">
+
+            <!-- Transaction history -->
+            <section class="panel" id="transactions">
+                <h2>Recent Transactions</h2>
+
+                <div id="transactionList">
+
+                    <div class="transaction">
+                        <div class="trans-left">
+                            <div class="trans-icon">🍔</div>
+                            <div>
+                                <div class="trans-name">Food</div>
+                                <div class="trans-category">Food · Sample</div>
+                            </div>
+                        </div>
+                        <div class="amount negative">−₹500</div>
+                    </div>
+
+                    <div class="transaction">
+                        <div class="trans-left">
+                            <div class="trans-icon">🚌</div>
+                            <div>
+                                <div class="trans-name">Transport</div>
+                                <div class="trans-category">Travel · Sample</div>
+                            </div>
+                        </div>
+                        <div class="amount negative">−₹1,000</div>
+                    </div>
+
+                    <div class="transaction">
+                        <div class="trans-left">
+                            <div class="trans-icon">💰</div>
+                            <div>
+                                <div class="trans-name">Salary</div>
+                                <div class="trans-category">Income · Sample</div>
+                            </div>
+                        </div>
+                        <div class="amount positive">+₹20,000</div>
+                    </div>
+
+                    <div class="transaction">
+                        <div class="trans-left">
+                            <div class="trans-icon">🛍️</div>
+                            <div>
+                                <div class="trans-name">Shopping</div>
+                                <div class="trans-category">Shopping · Sample</div>
+                            </div>
+                        </div>
+                        <div class="amount negative">−₹3,500</div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Add transaction -->
+            <section class="panel" id="add">
+                <h2>Add Transaction</h2>
+
+                <form id="expenseForm">
+
+                    <div class="form-group">
+                        <label for="title">Transaction Name</label>
+                        <input type="text" id="title"
+                               placeholder="e.g. Groceries" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount (₹)</label>
+                        <input type="number" id="amount" min="0.01"
+                               step="0.01" placeholder="Enter amount" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Transaction Type</label>
+                        <select id="type" required>
+                            <option value="expense">Expense</option>
+                            <option value="income">Income</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option>Food</option>
+                            <option>Travel</option>
+                            <option>Shopping</option>
+                            <option>Education</option>
+                            <option>Bills</option>
+                            <option>Health</option>
+                            <option>Salary</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <button class="btn" type="submit">Add Transaction</button>
+                    <p class="message" id="message" role="status"></p>
+
+                </form>
+            </section>
+
+        </div>
+
+        <!-- Budgets -->
+        <section class="panel" id="budgets">
+            <h2>Monthly Budget Overview</h2>
+
+            <div class="budget-item">
+                <div class="budget-label">
+                    <span>🍔 Food</span>
+                    <strong>₹3,500 / ₹5,000</strong>
+                </div>
+                <div class="progress">
+                    <div class="food-bar"></div>
+                </div>
+            </div>
+
+            <div class="budget-item">
+                <div class="budget-label">
+                    <span>🚌 Travel</span>
+                    <strong>₹900 / ₹2,000</strong>
+                </div>
+                <div class="progress">
+                    <div class="travel-bar"></div>
+                </div>
+            </div>
+
+            <div class="budget-item">
+                <div class="budget-label">
+                    <span>🛍️ Shopping</span>
+                    <strong>₹4,250 / ₹5,000</strong>
+                </div>
+                <div class="progress">
+                    <div class="shopping-bar"></div>
+                </div>
+            </div>
+
+            <div class="tip" id="tip">
+                💡 Smart Tip: Review your shopping expenses
+                and set a monthly spending limit.
+            </div>
+        </section>
+
+        <p style="text-align:center;color:#94a3b8;font-size:12px;padding:15px;">
+            SmartSpend Expense Tracker | Demo Project
+        </p>
+
+    </main>
+</div>
+
+<script>
+let totalIncome = 20000;
+let totalExpenses = 5000;
+
+const formatMoney = amount =>
+    "₹" + amount.toLocaleString("en-IN", {
+        maximumFractionDigits: 2
+    });
+
+function updateSummary() {
+    document.getElementById("income").textContent =
+        formatMoney(totalIncome);
+
+    document.getElementById("expenses").textContent =
+        formatMoney(totalExpenses);
+
+    document.getElementById("balance").textContent =
+        formatMoney(totalIncome - totalExpenses);
+}
+
+document.getElementById("expenseForm").addEventListener(
+    "submit", function(event) {
+        event.preventDefault();
+
+        const title = document.getElementById("title").value.trim();
+        const amount = Number(document.getElementById("amount").value);
+        const type = document.getElementById("type").value;
+        const category = document.getElementById("category").value;
+        const message = document.getElementById("message");
+
+        if (!title || !Number.isFinite(amount) || amount <= 0) {
+            message.textContent = "Enter a valid name and amount.";
+            return;
+        }
+
+        if (type === "income") {
+            totalIncome += amount;
+        } else {
+            totalExpenses += amount;
+        }
+
+        const icons = {
+            Food: "🍔",
+            Travel: "🚌",
+            Shopping: "🛍️",
+            Education: "📚",
+            Bills: "🧾",
+            Health: "💊",
+            Salary: "💰",
+            Other: "📌"
+        };
+
+        const row = document.createElement("div");
+        row.className = "transaction";
+
+        const left = document.createElement("div");
+        left.className = "trans-left";
+
+        const icon = document.createElement("div");
+        icon.className = "trans-icon";
+        icon.textContent = icons[category] || "📌";
+
+        const details = document.createElement("div");
+
+        const name = document.createElement("div");
+        name.className = "trans-name";
+        name.textContent = title;
+
+        const categoryText = document.createElement("div");
+        categoryText.className = "trans-category";
+        categoryText.textContent = category + " · Just now";
+
+        details.append(name, categoryText);
+        left.append(icon, details);
+
+        const value = document.createElement("div");
+        value.className = "amount " +
+            (type === "income" ? "positive" : "negative");
+
+        value.textContent =
+            (type === "income" ? "+" : "−") + formatMoney(amount);
+
+        row.append(left, value);
+
+        document.getElementById("transactionList").prepend(row);
+
+        updateSummary();
+
+        message.style.color = "#15803d";
+        message.textContent = "Transaction added successfully!";
+
+        this.reset();
+    }
+);
+
+updateSummary();
+</script>
+
+</body>
+</html>
